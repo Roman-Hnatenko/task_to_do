@@ -7,4 +7,4 @@ class ViewListTask(LoginRequiredMixin, View):
     login_url = 'login'
 
     def get(self, request):
-        return render(request, 'base.html')
+        return render(request, 'index.html')

@@ -109,8 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login/'
-LOGOUT_URL = '/'
-
+LOGOUT_REDIRECT_URL = '/'
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates/'),)
 
