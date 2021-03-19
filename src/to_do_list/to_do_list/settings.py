@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +28,7 @@ SECRET_KEY = 'fy)58h*5(l^ddz@4%w+gig^d1kh8f94*xv1kw&1i7t95_nlt0q'
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'list.User'
 
 # Application definition
 
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_registration',
     'list',
 ]
 
@@ -104,6 +107,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'login/'
+LOGOUT_URL = '/'
+
+
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates/'),)
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
