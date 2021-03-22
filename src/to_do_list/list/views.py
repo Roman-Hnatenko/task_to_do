@@ -14,13 +14,13 @@ class UserTasksMixin:
 class TaskListView(LoginRequiredMixin, UserTasksMixin, ListView):
     login_url = 'accounts/login/'
     model = Task
-    template_name = 'list/index.html'
     ordering = '-pk'
+    template_name = 'list/task_list.html'
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
-    fields = ['task_text']
+    fields = ['title', 'description']
     success_url = reverse_lazy('task-view')
 
     def form_valid(self, form):
@@ -30,7 +30,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
 class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
     model = Task
-    fields = ['task_text']
+    fields = ['title', 'description']
     success_url = reverse_lazy('task-view')
 
 

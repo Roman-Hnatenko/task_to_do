@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <ul class="list">
+    <li>
+      <div>
+        <h3>{{ task }}</h3>
+        <div><span class="">{{ task.date }}</span></div>
+      </div>
+    </li>
+  </ul>
+<form method="post">
+  {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

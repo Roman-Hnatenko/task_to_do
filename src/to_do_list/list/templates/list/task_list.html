@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+  <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
+{% endblock %}
+
+{% block content %}
+  {% for task in task_list %}
+    <ul class="list">
+      <li>
+        <div class="">
+          <a type="button" href="{% url 'task-delete' task.pk %}" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </a>
+          <h3>{{ task }}</h3>
+          <h4>{{ task.description }}</h4>
+          <div class="row">
+            <div class="col-md-11"><span>{{ task.date }}</span></div>
+            <div class="col-md-1">
+              <a type="button" href="{% url 'task-update' task.pk %}" class="btn btn-success">Edit</a>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  {% endfor %}
+{% endblock %}

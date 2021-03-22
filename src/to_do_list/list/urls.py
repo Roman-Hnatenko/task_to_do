@@ -12,6 +12,6 @@ urlpatterns = [
     path('accounts/', include('django_registration.backends.activation.urls')),
 
     path('task/add/', views.TaskCreateView.as_view(), name='task-add'),
-    path('task/<int:pk>/', views.TaskUpdateView.as_view(), name='task-update'),
+    path('task/<int:pk>/update/', views.TaskUpdateView.as_view(), name='task-update'),
     path('task/<int:pk>/delete/', views.TaskDeleteView.as_view(), name='task-delete'),
 ]
