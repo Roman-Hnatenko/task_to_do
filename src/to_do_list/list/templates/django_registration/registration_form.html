@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "list/../base.html" %}
 {% block content %}
   <div class="container">
     <form method="post">
@@ -10,7 +10,7 @@
             {% if error_message %}
               <p class="bg-danger p-d ml-b">{{ error_message }}</p>
             {% endif %}
-
+          {{ form.non_field_errors }}
             <div class="form-group clearfix">
 
               <label for="{{ form.username.id_for_label }}" class="col-md-4 control-label text-right">Username<span

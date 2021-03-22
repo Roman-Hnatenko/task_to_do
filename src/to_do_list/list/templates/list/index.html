@@ -1,0 +1,24 @@
+{% extends 'list/../base.html' %}
+
+{% block sidebar %}
+  <a type="button" href="{% url 'task-add' %}" class="btn btn-outline-dark">Add Task</a>
+{% endblock %}
+
+{% block content %}
+{% for task in task_list %}
+  <ul class="list">
+    <li>
+      <div>
+        <a type="button" href="{% url 'task-delete' task.pk %}" class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+        <h3>{{ task.task_text }}</h3>
+        <div><span class="">{{ task.date }}</span></div>
+
+          <a type="button" href="{% url 'task-update' task.pk %}" class="btn btn-outline-dark">Edit </a>
+
+      </div>
+    </li>
+  </ul>
+{% endfor %}
+{% endblock %}
