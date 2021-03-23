@@ -7,8 +7,8 @@ class User(AbstractUser):
 
 
 class Task(models.Model):
-    title = models.CharField(max_length=40, unique=True, default='')
-    description = models.TextField(max_length=120, blank=True)
+    title = models.CharField(max_length=60, unique=True, default='')
+    description = models.TextField(max_length=200, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     done = models.BooleanField(default=False)

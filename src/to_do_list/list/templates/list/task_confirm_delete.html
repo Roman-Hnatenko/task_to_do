@@ -6,12 +6,13 @@
     <li>
       <div>
         <h3>{{ task }}</h3>
-        <div><span class="">{{ task.date }}</span></div>
+        <div><span>{{ task.date }}</span></div>
       </div>
     </li>
+        <form method="post">
+          {% csrf_token %}
+          <input type="submit" class="btn btn-primary mt-2" value="Delete">
+        </form>
   </ul>
-<form method="post">
-  {% csrf_token %}
-    <input type="submit" value="Delete">
-</form>
+
 {% endblock %}
