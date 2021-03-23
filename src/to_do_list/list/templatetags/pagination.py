@@ -6,12 +6,11 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def paginate(context):
+    print(context)
     page_obj = context['page_obj']
-
-    paginator = context['paginator']
     paginate_html = '<div class="container pagination"><div class="row text-center">'
     current_page = page_obj.number
-    total_page = paginator.num_pages
+    total_page = page_obj.paginator.num_pages
 
     def generate_link(link, link_value, style=''):
         return f'<a class="{style} larger-size" href="?page={link}">{link_value}</a>'
@@ -23,7 +22,8 @@ def paginate(context):
         if current_page - 2 >= 3:
             paginate_html += generate_link(page_obj.previous_page_number(), '...')
 
-    for page in paginator.page_range:
+    for page in range(total_page):
+        page += 1
         if page == current_page:
             paginate_html += generate_link('#', page, style='active')
         elif current_page - 3 < page < current_page + 3:

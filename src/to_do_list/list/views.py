@@ -16,7 +16,7 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, ListView):
     model = Task
     ordering = '-pk'
     template_name = 'list/task_list.html'
-    paginate_by = 3
+    paginate_by = 1
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
