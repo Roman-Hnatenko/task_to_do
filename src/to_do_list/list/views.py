@@ -16,6 +16,7 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, ListView):
     model = Task
     ordering = '-pk'
     template_name = 'list/task_list.html'
+    paginate_by = 3
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
@@ -37,8 +38,3 @@ class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
 class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
     model = Task
     success_url = reverse_lazy('task-view')
-
-
-
-
-

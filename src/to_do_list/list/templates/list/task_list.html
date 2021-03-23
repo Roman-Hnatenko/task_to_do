@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load pagination %}
 {% block sidebar %}
   <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
 {% endblock %}
@@ -24,4 +24,7 @@
       </li>
     </ul>
   {% endfor %}
+
+  {% paginate %}
+
 {% endblock %}

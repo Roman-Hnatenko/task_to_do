@@ -26,7 +26,7 @@ SECRET_KEY = 'fy)58h*5(l^ddz@4%w+gig^d1kh8f94*xv1kw&1i7t95_nlt0q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'list.User'
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_registration',
     'list',
     'bootstrapform',
+
 ]
 
 MIDDLEWARE = [
@@ -59,7 +60,7 @@ ROOT_URLCONF = 'to_do_list.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates/'),],
+        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,6 +115,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

@@ -1,6 +1,25 @@
 body {
-    background: #eee
+    height: 100vh;
+    width: 100vw;
 }
+
+.larger-size {
+    font-size: 120%;
+}
+.pagination a {
+    color: black;
+
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
 
 .icons i {
     color: #b5b3b3;
