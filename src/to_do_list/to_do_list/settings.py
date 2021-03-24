@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_registration',
     'list',
     'bootstrapform',
+    'django_filters',
 
 ]
 

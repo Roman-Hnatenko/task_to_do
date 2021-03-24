@@ -3,44 +3,40 @@
   <div class="container">
     <form method="post">
       {% csrf_token %}
-      <div class="col-md-8 col-md-offset-2">
-        <div class="panel panel-default">
-          <div class="panel-heading">Register</div>
+      <div class="col-8">
+
+        <div class="panel-heading"><h4>Register</h4></div>
           <div class="panel-body">
-            {% if error_message %}
-              <p class="bg-danger p-d ml-b">{{ error_message }}</p>
-            {% endif %}
-          {{ form.non_field_errors }}
             <div class="form-group clearfix">
 
               <label for="{{ form.username.id_for_label }}" class="col-md-4 control-label text-right">Username<span
                       class="text-red">*</span>:</label>
-              <div class="col-md-6">
+
                 {{ form.username }}
-              </div>
+
             </div>
             <div class="form-group clearfix">
 
               <label for="{{ form.email.id_for_label }}" class="col-md-4 control-label text-right">Email<span
                       class="text-red">*</span>:</label>
-              <div class="col-md-6">
+
                 {{ form.email }}
-              </div>
+
             </div>
             <div class="form-group clearfix">
               <label for="{{ form.password.id_for_label }}" class="col-md-4 control-label text-right">Password<span
                       class="text-red">*</span>:</label>
-              <div class="col-md-6">
+
                 {{ form.password1 }}
-              </div>
+
             </div>
             <div class="form-group clearfix">
 
               <label for="{{ form.password_repeat.id_for_label }}" class="col-md-4 control-label text-right">Confirm
                 password<span class="text-red">*</span>:</label>
-              <div class="col-md-6">
+
                 {{ form.password2 }}
-              </div>
+
             </div>
             {% for field in form %}
               <div class="fieldWrapper">
@@ -51,7 +47,7 @@
               <input type="submit" value="Register" class="btn btn-success">
             </div>
           </div>
-        </div>
+
       </div>
     </form>
   </div>

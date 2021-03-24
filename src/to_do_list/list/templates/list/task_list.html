@@ -1,22 +1,36 @@
 {% extends 'base.html' %}
 {% load pagination %}
-{% block sidebar %}
-  <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
+{% block addbutton %}
+  <div style="display: inline">
+    <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
+  </div>
 {% endblock %}
 
 {% block content %}
+  <ul class="nav nav-tabs mt-2">
+    <li class="nav-item">
+      <a class="nav-link {% if tab_name == "active" %}active{% endif %}" aria-current="page" href="{% url 'task-active' %}">Active</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if tab_name == "done"%}active{% endif %}" href="{% url 'task-done' %}">Done</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if tab_name == "all"%}active{% endif %}" href="{% url 'task-view' %}">All</a>
+    </li>
+  </ul>
+
   {% for task in task_list %}
-    <ul class="list">
-      <li>
-        <div class="">
+    <ul class="list pl-0">
+      <li style="border-color: #dddddd;">
+        <div>
           <a type="button" href="{% url 'task-delete' task.pk %}" class="close" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </a>
-          <h3>{{ task }}</h3>
-          <h4>{{ task.description }}</h4>
+          <h4>{{ task }}</h4>
+          <h5>{{ task.description }}</h5>
           <div class="row">
             <div class="col-md-11"><span>{{ task.date }}</span></div>
-            <div class="col-md-1">
+            <div class="col-mr-1">
               <a type="button" href="{% url 'task-update' task.pk %}" class="btn btn-success">Edit</a>
             </div>
           </div>
@@ -25,7 +39,14 @@
     </ul>
   {% endfor %}
 
-
   {% paginate %}
 
+
+  {% block script %}
+    <script>
+      document.querySelector('a').onclick = function () {
+        this.class= "nav-link active";
+      }
+    </script>
+  {% endblock %}
 {% endblock %}
