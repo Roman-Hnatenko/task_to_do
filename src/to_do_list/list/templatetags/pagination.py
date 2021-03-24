@@ -5,8 +5,8 @@ from django.core.paginator import Page
 register = template.Library()
 
 
-def generate_link(page_number: int, link_title: str,  query: QueryDict, classes=None) -> str:
-    classes = classes or ''
+def generate_link(page_number: int, link_title: str,  query: QueryDict, active=False) -> str:
+    classes = 'active' if active else ''
     query['page'] = page_number
     return f'<a class="{classes} larger-size" href="?{query.urlencode()}">{link_title}</a>'
 
@@ -15,7 +15,7 @@ def generate_link(page_number: int, link_title: str,  query: QueryDict, classes=
 def paginate(context):
     query = context['request'].GET.copy()
     page_obj: Page = context['page_obj']
-    paginate_html = '<div class="container pagination"><div class="row text-center">'
+    paginate_html = ''
     current_page = page_obj.number
     total_page = page_obj.paginator.num_pages
 
@@ -30,8 +30,7 @@ def paginate(context):
         start_page = max(current_page - 2, 1)
         last_page = min(current_page + 3, total_page + 1)
         for page in range(start_page, last_page):
-            classes = 'active' if page == current_page else None
-            paginate_html += generate_link(page, str(page), query, classes=classes)
+            paginate_html += generate_link(page, str(page), query, page == current_page)
 
     if page_obj.has_next():
         if current_page + 3 < total_page:
@@ -40,5 +39,5 @@ def paginate(context):
             paginate_html += generate_link(total_page, total_page, query)
         paginate_html += generate_link(page_obj.next_page_number(), '»', query)
 
-    paginate_html += '</div></div>'
-    return mark_safe(paginate_html)
+    html = f'<div class="container pagination"><div class="row text-center">{paginate_html}</div></div>'
+    return mark_safe(html)
