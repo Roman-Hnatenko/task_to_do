@@ -13,7 +13,7 @@ class Task(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     done = models.BooleanField(default=False)
-    done_date = models.DateTimeField(null=True, blank=True)
+    done_date = models.DateTimeField(null=True,  blank=True)
 
     def __str__(self):
         return self.title

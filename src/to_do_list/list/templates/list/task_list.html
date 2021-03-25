@@ -10,6 +10,7 @@
 {% block buttons %}
   <div class="conteiner">
     <div class="row">
+
       <div class="col-4">
         <div style="display: inline">
           <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
@@ -17,13 +18,8 @@
       </div>
 
       <div class="col-8">
-        <form >
-{#        <label for="start">Created on</label>#}
-
+        <form>
           {{ date_form }}
-{#        <input type="date" id="start" name="creation-date"#}
-{##}
-{#               max="{{ date_now }}">#}
           <button class="btn btn-success" type="submit">Show</button>
         </form>
       </div>
@@ -32,12 +28,9 @@
 {% endblock %}
 
 {% block sidebar %}
-
 {% endblock %}
 
-
 {% block content %}
-
   <ul class="nav nav-tabs mt-2">
     <li class="nav-item">
       <a class="nav-link {% if tab_name == "active" %}active{% endif %}" aria-current="page"
@@ -52,8 +45,8 @@
   </ul>
 
 
-
-  {% if not task_list %} <div class="text-center mt-3"><h3>Nothing found</h3></div>{% endif %}
+  {% if not task_list %}
+    <div class="text-center mt-3"><h3>Nothing found</h3></div>{% endif %}
   {% for task in task_list %}
     <ul class="list pl-0">
       <li style="border-color: #dddddd;">

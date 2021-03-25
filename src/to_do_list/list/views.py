@@ -36,10 +36,14 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
         queryset = super().get_queryset()
         if self.filter_params:
             queryset = queryset.filter(**self.filter_params)
-        if self.request.GET.get('creation-date'):
-            date = datetime.strptime(self.request.GET['creation-date'], "%Y-%m-%d")
-            queryset = queryset.filter(date__date=date)
         return queryset
+
+    def get(self, request, *args, **kwargs):
+        form_date = DateForm(request.GET)
+        if form_date.is_valid():
+            date = form_date.cleaned_data.get('date')
+            self.get_queryset().filter(date__date=date) ##############
+        return super().get(request, *args, **kwargs)
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
@@ -80,12 +84,3 @@ class DoneTaskView(TaskListView):
     filter_params = dict(
         done=True
     )
-
-
-# class FilterTaskView(TaskListView):
-
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     date = datetime.strptime(self.request.GET['creation-date'], "%Y-%m-%d")
-    #     queryset = queryset.filter(date__date=date)
-    #     return queryset
