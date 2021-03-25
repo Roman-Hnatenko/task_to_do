@@ -8,10 +8,10 @@
 
   {% block link %}
 
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
   {% endblock %}
-
+  {% block script %} {% endblock %}
 </head>
 <body>
 <div>
@@ -32,24 +32,21 @@
 </div>
 
 
-<div class="container mt-2">
+<div class="container mt-2 ">
   <div class="row">
-
-
-    <div class="col-10">
-      {% block addbutton %} {% endblock %}
+  </div>
+    <div class="col">
+      {% block buttons %} {% endblock %}
 
       {% block content %}
       {% endblock content %}
     </div>
 
+
   </div>
 </div>
 
 
-{% block script %}
-
-{% endblock %}
 
 </body>
 </html>

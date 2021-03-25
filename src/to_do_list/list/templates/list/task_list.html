@@ -1,24 +1,59 @@
 {% extends 'base.html' %}
 {% load pagination %}
-{% block addbutton %}
-  <div style="display: inline">
-    <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
+
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block buttons %}
+  <div class="conteiner">
+    <div class="row">
+      <div class="col-4">
+        <div style="display: inline">
+          <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
+        </div>
+      </div>
+
+      <div class="col-8">
+        <form >
+{#        <label for="start">Created on</label>#}
+
+          {{ date_form }}
+{#        <input type="date" id="start" name="creation-date"#}
+{##}
+{#               max="{{ date_now }}">#}
+          <button class="btn btn-success" type="submit">Show</button>
+        </form>
+      </div>
+    </div>
   </div>
 {% endblock %}
 
+{% block sidebar %}
+
+{% endblock %}
+
+
 {% block content %}
+
   <ul class="nav nav-tabs mt-2">
     <li class="nav-item">
-      <a class="nav-link {% if tab_name == "active" %}active{% endif %}" aria-current="page" href="{% url 'task-active' %}">Active</a>
+      <a class="nav-link {% if tab_name == "active" %}active{% endif %}" aria-current="page"
+         href="{% url 'task-active' %}">Active</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {% if tab_name == "done"%}active{% endif %}" href="{% url 'task-done' %}">Done</a>
+      <a class="nav-link {% if tab_name == "done" %}active{% endif %}" href="{% url 'task-done' %}">Done</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {% if tab_name == "all"%}active{% endif %}" href="{% url 'task-view' %}">All</a>
+      <a class="nav-link {% if tab_name == "all" %}active{% endif %}" href="{% url 'task-view' %}">All</a>
     </li>
   </ul>
 
+
+
+  {% if not task_list %} <div class="text-center mt-3"><h3>Nothing found</h3></div>{% endif %}
   {% for task in task_list %}
     <ul class="list pl-0">
       <li style="border-color: #dddddd;">
@@ -33,6 +68,9 @@
             <div class="col-mr-1">
               <a type="button" href="{% url 'task-update' task.pk %}" class="btn btn-success">Edit</a>
             </div>
+
+            <div class="col-md-11"><span> {% if not task.done_date == None %}Performed on
+              {{ task.done_date }} {% endif %}</span></div>
           </div>
         </div>
       </li>
