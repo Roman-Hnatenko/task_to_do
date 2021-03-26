@@ -158,7 +158,7 @@ cython_debug/
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
-.idea/**
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
@@ -217,7 +217,7 @@ fabric.properties
 
 # !.vscode/settings.json
 # !.vscode/tasks.json
-# !.vscode/launch.json
+!.vscode/launch.json
 # !.vscode/extensions.json
 
 # Local History for Visual Studio Code
