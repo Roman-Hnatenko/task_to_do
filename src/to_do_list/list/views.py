@@ -5,7 +5,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
-from .forms import DateForm
+from .forms import DateTimeForm
 
 
 class UserTasksMixin:
@@ -17,20 +17,24 @@ class TabMixin:
     def get_context_data(self, *args, **kwargs):
         return super().get_context_data(
             tab_name=self.tab_name,
-            date_form=DateForm(),
             *args,
             **kwargs
         )
 
 
 class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
+
     login_url = 'accounts/login/'
     model = Task
     ordering = '-pk'
     template_name = 'list/task_list.html'
     paginate_by = 5
-    filter_params: Dict[str, Any] = dict()
     tab_name = 'all'
+    filter_params: Dict[str, Any] = dict()
+    date_form = None
+
+    def get_context_data(self, *args, **kwargs):
+        return super().get_context_data(date_form=self.date_form, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -39,10 +43,14 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
         return queryset
 
     def get(self, request, *args, **kwargs):
-        form_date = DateForm(request.GET)
-        if form_date.is_valid():
-            date = form_date.cleaned_data.get('date')
-            self.get_queryset().filter(date__date=date) ##############
+        self.date_form = DateTimeForm(request.GET)
+
+        if not self.filter_params.get('done'):
+            self.date_form.fields.pop('done_date__date')
+
+        if self.date_form.is_valid():
+            cleaned_dates = {key: value for key, value in self.date_form.cleaned_data.items() if value}
+            self.filter_params = dict(**cleaned_dates, **self.filter_params)
         return super().get(request, *args, **kwargs)
 
 
