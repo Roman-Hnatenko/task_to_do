@@ -20,17 +20,11 @@ repos:
     rev: v1.5.4
     hooks:
     - id: autopep8
-  # - repo: https://github.com/pre-commit/mirrors-pylint
-  #   rev: v2.7.2
-  #   hooks:
-  #   -   id: pylint
-  -   repo: local
-      hooks:
-      -   id: pylint
-          name: pylint
-          entry: pylint --disable=F0401
-          language: system
-          types: [python]
+  - repo: https://github.com/pre-commit/mirrors-pylint
+    rev: v2.7.2
+    hooks:
+    -   id: pylint
+        args: ["--score=n --disable=F0401"]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.4
     hooks:
