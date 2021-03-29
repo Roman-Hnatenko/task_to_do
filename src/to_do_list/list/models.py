@@ -11,8 +11,11 @@ class Task(models.Model):
     description = models.TextField(max_length=200, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    done = models.BooleanField(default=False)
     done_date = models.DateTimeField(null=True,  blank=True)
+
+    @property
+    def is_done(self) -> bool:
+        return bool(self.done_date)
 
     def __str__(self):
         return str(self.title)

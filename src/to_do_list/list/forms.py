@@ -1,4 +1,4 @@
-import copy
+from copy import copy
 from datetime import datetime
 from django_registration.forms import RegistrationForm
 from django import forms
@@ -31,5 +31,5 @@ class DoneActiveDateForm(ActiveDateForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['done_date__date'] = copy.copy(self.fields['date__date'])
+        self.fields['done_date__date'] = copy(self.fields['date__date'])
         self.fields['done_date__date'].label = 'Date of complete'

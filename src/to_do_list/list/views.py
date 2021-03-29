@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic import ListView
+from django.views.generic import ListView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
 from .forms import ActiveDateForm, DoneActiveDateForm
@@ -21,7 +21,6 @@ class TabMixin:
 
 
 class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
-
     login_url = 'accounts/login/'
     model = Task
     ordering = '-pk'
@@ -54,7 +53,7 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
 class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['title', 'description']
-    success_url = reverse_lazy('task-view')
+    success_url = reverse_lazy('task_view')
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -63,25 +62,19 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
 
 class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
     model = Task
-    fields = ['title', 'description', 'done']
-    success_url = reverse_lazy('task-view')
-
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('done'):
-            self.model.objects.filter(pk=self.kwargs.get(self.pk_url_kwarg)).update(done_date=datetime.now())
-        return super().post(request, *args, **kwargs)
-
+    fields = ['title', 'description']
+    success_url = reverse_lazy('task_view')
 
 
 class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
     model = Task
-    success_url = reverse_lazy('task-view')
+    success_url = reverse_lazy('task_view')
 
 
 class ActiveTaskView(TaskListView):
     tab_name = 'active'
     filter_params = dict(
-        done=False
+        done_date__isnull=True
     )
 
 
@@ -89,5 +82,16 @@ class DoneTaskView(TaskListView):
     class_form = DoneActiveDateForm
     tab_name = 'done'
     filter_params = dict(
-        done=True
+        done_date__isnull=False
     )
+
+
+class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
+    url = reverse_lazy('task_view')
+    http_method_names = ['post']
+    model = Task
+
+    def post(self, request, *args, **kwargs):
+        pk_value = request.POST.get('pk')
+        self.model.objects.filter(pk=pk_value).update(done_date=datetime.now())
+        return super().post(request, *args, **kwargs)
