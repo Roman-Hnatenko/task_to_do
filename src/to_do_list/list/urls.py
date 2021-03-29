@@ -6,7 +6,7 @@ from .forms import RegisterForm
 
 urlpatterns = [
     path('', views.TaskListView.as_view(), name='task-view'),
-    # path('filter/', views.FilterTaskView.as_view(), name='filter-task'),
+
     path('active/', views.ActiveTaskView.as_view(), name='task-active'),
     path('done/', views.DoneTaskView.as_view(), name='task-done'),
 

@@ -1,10 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import datetime
 
 
 class User(AbstractUser):
-    USERNAME_FIELD = 'username'
+    pass
 
 
 class Task(models.Model):
@@ -16,4 +15,4 @@ class Task(models.Model):
     done_date = models.DateTimeField(null=True,  blank=True)
 
     def __str__(self):
-        return self.title
+        return str(self.title)

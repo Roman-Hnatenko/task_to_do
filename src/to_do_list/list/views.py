@@ -5,7 +5,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
-from .forms import DateForm
+from .forms import ActiveDateForm, DoneActiveDateForm
 
 
 class UserTasksMixin:
@@ -29,12 +29,13 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
     paginate_by = 5
     tab_name = 'all'
     filter_params: Dict[str, Any] = dict()
+    class_form = ActiveDateForm
     date_form = None
 
+
+
     def get_context_data(self, *args, **kwargs):
-        return super().get_context_data(
-            date_form=self.date_form,
-            *args, **kwargs)
+        return super().get_context_data(date_form=self.date_form, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -43,10 +44,10 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
         return queryset
 
     def get(self, request, *args, **kwargs):
-        self.date_form = DateForm(request.GET)
+        self.date_form = self.class_form(request.GET)
 
         if self.date_form.is_valid():
-            self.filter_params = dict(**self.date_form.cleaned_data, **self.filter_params)
+            self.filter_params = dict(**self.date_form.validate_dates(), **self.filter_params)
         return super().get(request, *args, **kwargs)
 
 
@@ -71,6 +72,7 @@ class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
 
+
 class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
     model = Task
     success_url = reverse_lazy('task-view')
@@ -84,6 +86,7 @@ class ActiveTaskView(TaskListView):
 
 
 class DoneTaskView(TaskListView):
+    class_form = DoneActiveDateForm
     tab_name = 'done'
     filter_params = dict(
         done=True

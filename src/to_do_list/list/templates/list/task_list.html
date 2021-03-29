@@ -20,10 +20,6 @@
       <div class="col-10">
         <form>
           {{ date_form }}
-          {{ done_date_form }}
-{#          {% if done_date_form %}#}
-
-{#          {% endif %}#}
           <button class="btn btn-success" type="submit">Show</button>
         </form>
 
@@ -39,14 +35,14 @@
 {% block content %}
   <ul class="nav nav-tabs mt-2">
     <li class="nav-item">
-      <a class="nav-link {% if tab_name == "active" %}active{% endif %}" aria-current="page"
+      <a class='nav-link {% if tab_name == "active" %}active{% endif %}' aria-current="page"
          href="{% url 'task-active' %}">Active</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {% if tab_name == "done" %}active{% endif %}" href="{% url 'task-done' %}">Done</a>
+      <a class='nav-link {% if tab_name == "done" %}active{% endif %}' href="{% url 'task-done' %}">Done</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {% if tab_name == "all" %}active{% endif %}" href="{% url 'task-view' %}">All</a>
+      <a class='nav-link {% if tab_name == "all" %}active{% endif %}' href="{% url 'task-view' %}">All</a>
     </li>
   </ul>
 
