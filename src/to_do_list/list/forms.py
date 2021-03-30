@@ -33,3 +33,7 @@ class DoneActiveDateForm(ActiveDateForm):
         super().__init__(*args, **kwargs)
         self.fields['done_date__date'] = copy(self.fields['date__date'])
         self.fields['done_date__date'].label = 'Date of complete'
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField(widget=forms.FileInput(attrs={'class': 'text-right'}))
+    file.required = False

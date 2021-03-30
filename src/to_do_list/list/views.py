@@ -1,16 +1,16 @@
 import csv
 from datetime import datetime
 from typing import Any, Dict
+
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
 from django.views.generic.list import BaseListView
 from django.views.generic import ListView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
-from .forms import ActiveDateForm, DoneActiveDateForm
-
-
+from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm
+from django.template.defaultfilters import date
 class UserTasksMixin:
     def get_queryset(self):
         return super().get_queryset().filter(author=self.request.user)
@@ -35,9 +35,8 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
     date_form = None
 
 
-
     def get_context_data(self, *args, **kwargs):
-        return super().get_context_data(date_form=self.date_form, *args, **kwargs)
+        return super().get_context_data(date_form=self.date_form, file_form=UploadFileForm(), *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -107,7 +106,25 @@ class OutputCsvView(LoginRequiredMixin, UserTasksMixin, BaseListView):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=tasks.csv'
         writer = csv.writer(response)
-        writer.writerow(['Title of task', 'Description', ' Date of create', 'Date of complete'])
+        writer.writerow(['Title', 'Description', ' Create Date', 'Complete Date'])
+
         for task in context['object_list']:
-            writer.writerow([task.title, task.description, task.date, task.done_date])
+            writer.writerow([
+                task.title,
+                task.description,
+                task.date.isoformat(),
+                task.done_date.isoformat() if task.done_date else '',
+            ])
         return response
+
+
+class UploadCsvView(LoginRequiredMixin, UserTasksMixin, FormView):
+    template_name = 'list/file_form.html'
+    form_class = UploadFileForm
+    success_url = reverse_lazy('task_view')
+
+    def form_valid(self, form):
+        csv_file = form.files['file']
+
+
+        return super().form_valid(form)

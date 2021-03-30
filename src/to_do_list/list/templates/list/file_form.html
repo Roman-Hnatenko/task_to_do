@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content%}
+<div >
+<form method="post" class="was-validated" enctype="multipart/form-data" >
+{% csrf_token%}
+
+{{form}}
+<button type="submit" class="btn btn-info">Ok</button>
+</form>
+
+</div>
+{%endblock%}
