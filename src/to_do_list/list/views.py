@@ -1,7 +1,10 @@
+import csv
 from datetime import datetime
 from typing import Any, Dict
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import BaseListView
 from django.views.generic import ListView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
@@ -95,3 +98,16 @@ class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
         pk_value = request.POST.get('pk')
         self.model.objects.filter(pk=pk_value).update(done_date=datetime.now())
         return super().post(request, *args, **kwargs)
+
+
+class OutputCsvView(LoginRequiredMixin, UserTasksMixin, BaseListView):
+    model = Task
+
+    def render_to_response(self, context):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=tasks.csv'
+        writer = csv.writer(response)
+        writer.writerow(['Title of task', 'Description', ' Date of create', 'Date of complete'])
+        for task in context['object_list']:
+            writer.writerow([task.title, task.description, task.date, task.done_date])
+        return response

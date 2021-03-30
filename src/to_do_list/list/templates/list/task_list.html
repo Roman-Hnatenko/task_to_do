@@ -9,9 +9,17 @@
 
 {% block buttons %}
   <div class="conteiner">
+  <div class="row">
+  <div class="col text-right pr-0">
+  <form action='{% url "output_file"%}'>
+    <button class="btn btn-info " type="submit">Get file</button>
+  </form>
+  </div>
+  </div>
+
     <div class="row">
 
-      <div class="col-2">
+      <div class="col-2 pl-0">
         <div style="display: inline">
           <a type="button" href="{% url 'task_add' %}" class="btn btn-success">Add Task</a>
         </div>
@@ -22,15 +30,14 @@
           {{ date_form }}
           <button class="btn btn-success" type="submit">Show</button>
         </form>
-
       </div>
     </div>
   </div>
+
   </div>
 {% endblock %}
 
-{% block sidebar %}
-{% endblock %}
+
 
 {% block content %}
   <ul class="nav nav-tabs mt-2">

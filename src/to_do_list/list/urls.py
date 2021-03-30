@@ -9,7 +9,7 @@ urlpatterns = [
     path('done/task/', views.DoneButtonTaskView.as_view(), name='task_done_button'),
     path('active/', views.ActiveTaskView.as_view(), name='task_active'),
     path('done/', views.DoneTaskView.as_view(), name='task_done'),
-
+    path('get-file', views.OutputCsvView.as_view(), name='output_file'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/register/', RegistrationView.as_view(form_class=RegisterForm), name='django_registration_register',),
     path('accounts/', include('django_registration.backends.activation.urls')),
