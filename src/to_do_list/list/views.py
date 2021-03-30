@@ -124,7 +124,10 @@ class UploadCsvView(LoginRequiredMixin, UserTasksMixin, FormView):
     success_url = reverse_lazy('task_view')
 
     def form_valid(self, form):
-        csv_file = form.files['file']
-
-
+        # csv_file = self.request.FILES['file'].file
+        # print(csv_file)
+        # with open(csv_file) as file:
+        #     reader = csv.DictReader(file)
+        #     for row in reader:
+        #         print(row['Title'])
         return super().form_valid(form)
