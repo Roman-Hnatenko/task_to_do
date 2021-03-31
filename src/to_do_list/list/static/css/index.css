@@ -61,3 +61,7 @@
 .profile-image img {
     margin-left: 3px
 }
+
+.in-block {
+    display: inline;
+}

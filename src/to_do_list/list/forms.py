@@ -3,6 +3,7 @@ from datetime import datetime
 from django_registration.forms import RegistrationForm
 from django import forms
 from .models import User
+from .fields import TaskCsvFileFied
 
 class RegisterForm(RegistrationForm):
     class Meta(RegistrationForm.Meta):
@@ -34,6 +35,6 @@ class DoneActiveDateForm(ActiveDateForm):
         self.fields['done_date__date'] = copy(self.fields['date__date'])
         self.fields['done_date__date'].label = 'Date of complete'
 
+
 class UploadFileForm(forms.Form):
-    file = forms.FileField(widget=forms.FileInput(attrs={'class': 'text-right'}))
-    file.required = False
+    file = TaskCsvFileFied()

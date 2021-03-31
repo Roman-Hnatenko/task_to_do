@@ -3,7 +3,7 @@
 
 {% block content %}
 
-  <form role="form" method="post">
+  <form method="post">
     <legend>Сhange task</legend>
     {% csrf_token %}
     {{ form|bootstrap }}

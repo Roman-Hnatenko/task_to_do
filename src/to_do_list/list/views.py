@@ -1,7 +1,6 @@
 import csv
 from datetime import datetime
 from typing import Any, Dict
-
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
@@ -10,7 +9,8 @@ from django.views.generic import ListView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
 from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm
-from django.template.defaultfilters import date
+
+
 class UserTasksMixin:
     def get_queryset(self):
         return super().get_queryset().filter(author=self.request.user)
@@ -106,7 +106,7 @@ class OutputCsvView(LoginRequiredMixin, UserTasksMixin, BaseListView):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=tasks.csv'
         writer = csv.writer(response)
-        writer.writerow(['Title', 'Description', ' Create Date', 'Complete Date'])
+        writer.writerow(['Title', 'Description', 'Create Date', 'Complete Date'])
 
         for task in context['object_list']:
             writer.writerow([
@@ -122,12 +122,19 @@ class UploadCsvView(LoginRequiredMixin, UserTasksMixin, FormView):
     template_name = 'list/file_form.html'
     form_class = UploadFileForm
     success_url = reverse_lazy('task_view')
+    model = Task
 
     def form_valid(self, form):
-        # csv_file = self.request.FILES['file'].file
-        # print(csv_file)
-        # with open(csv_file) as file:
-        #     reader = csv.DictReader(file)
-        #     for row in reader:
-        #         print(row['Title'])
+
+        reader = form.cleaned_data['file']
+        print(reader)
+        for row in reader:
+            self.model.objects.create(
+                title=row['Title'],
+                description=row['Description'],
+                date=row['Create Date'],
+                done_date = datetime.fromisoformat(row['Complete Date']) if row['Complete Date'] else None,
+                author=self.request.user
+            )
+
         return super().form_valid(form)

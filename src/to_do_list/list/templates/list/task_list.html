@@ -23,7 +23,7 @@
     <div class="row">
 
       <div class="col-2 pl-0">
-        <div style="display: inline">
+        <div class='in-block'>
           <a type="button" href="{% url 'task_add' %}" class="btn btn-success">Add Task</a>
         </div>
       </div>
@@ -61,7 +61,7 @@
     <div class="text-center mt-3"><h3>Nothing found</h3></div>{% endif %}
   {% for task in task_list %}
     <ul class="list pl-0">
-      <li style="border-color: #dddddd;">
+      <li>
         <div>
           <a type="button" href="{% url 'task_delete' task.pk %}" class="close" aria-label="Close">
             <span aria-hidden="true">&times;</span>
