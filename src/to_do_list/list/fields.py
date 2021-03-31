@@ -17,6 +17,5 @@ class CsvFileField(forms.FileField):
 
 
 class TaskCsvFileFied(CsvFileField):
-    widget=forms.FileInput()
-    required_columns = ['Title', 'Description', 'Create Date', 'Complete Date']
-    default_validators = [validators.CsvRequiredColumnsValidator(required_columns)]
+    REQUIRED_COLUMNS = ('Title', 'Description', 'Create Date', 'Complete Date')
+    default_validators = [validators.CsvRequiredColumnsValidator(REQUIRED_COLUMNS)]

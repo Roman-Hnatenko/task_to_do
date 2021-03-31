@@ -132,7 +132,7 @@ class UploadCsvView(LoginRequiredMixin, UserTasksMixin, FormView):
             self.model.objects.create(
                 title=row['Title'],
                 description=row['Description'],
-                date=row['Create Date'],
+                date=datetime.fromisoformat(row['Create Date']) if row['Create Date'] else None,
                 done_date = datetime.fromisoformat(row['Complete Date']) if row['Complete Date'] else None,
                 author=self.request.user
             )
