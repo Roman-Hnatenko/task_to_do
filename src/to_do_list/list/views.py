@@ -67,7 +67,6 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         self.date_form = self.class_form(request.GET)
-
         if self.date_form.is_valid():
             self.filter_params = dict(**self.date_form.validate_dates(), **self.filter_params)
         return super().get(request, *args, **kwargs)
