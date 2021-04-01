@@ -20,7 +20,27 @@ class TabMixin:
     def get_context_data(self, *args, **kwargs):
         return super().get_context_data(
             tab_name=self.tab_name,
+            import_link=self.import_link,
             *args, **kwargs)
+
+
+class OutputCsvFileMixin:
+    # paginate_by = None
+
+    def render_to_response(self, context):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=tasks.csv'
+        writer = csv.writer(response)
+        writer.writerow(['Title', 'Description', 'Create Date', 'Complete Date'])
+
+        for task in context['object_list']:
+            writer.writerow([
+                task.title,
+                task.description,
+                task.date.isoformat(),
+                task.done_date.isoformat() if task.done_date else '',
+            ])
+        return response
 
 
 class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
@@ -30,6 +50,7 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
     template_name = 'list/task_list.html'
     paginate_by = 5
     tab_name = 'all'
+    import_link = 'output_file'
     filter_params: Dict[str, Any] = dict()
     class_form = ActiveDateForm
     date_form = None
@@ -74,6 +95,7 @@ class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
 
 
 class ActiveTaskView(TaskListView):
+    import_link = 'output_file_active'
     tab_name = 'active'
     filter_params = dict(
         done_date__isnull=True
@@ -81,6 +103,7 @@ class ActiveTaskView(TaskListView):
 
 
 class DoneTaskView(TaskListView):
+    import_link = 'output_file_done'
     class_form = DoneActiveDateForm
     tab_name = 'done'
     filter_params = dict(
@@ -98,43 +121,34 @@ class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
         self.model.objects.filter(pk=pk_value).update(done_date=datetime.now())
         return super().post(request, *args, **kwargs)
 
-
-class OutputCsvView(LoginRequiredMixin, UserTasksMixin, BaseListView):
-    model = Task
-
-    def render_to_response(self, context):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=tasks.csv'
-        writer = csv.writer(response)
-        writer.writerow(['Title', 'Description', 'Create Date', 'Complete Date'])
-
-        for task in context['object_list']:
-            writer.writerow([
-                task.title,
-                task.description,
-                task.date.isoformat(),
-                task.done_date.isoformat() if task.done_date else '',
-            ])
-        return response
-
-
-class UploadCsvView(LoginRequiredMixin, UserTasksMixin, FormView):
+class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
     template_name = 'list/file_form.html'
     form_class = UploadFileForm
     success_url = reverse_lazy('task_view')
     model = Task
 
     def form_valid(self, form):
-
         reader = form.cleaned_data['file']
-        print(reader)
         for row in reader:
-            self.model.objects.create(
-                title=row['Title'],
-                description=row['Description'],
-                date=datetime.fromisoformat(row['Create Date']) if row['Create Date'] else None,
-                done_date = datetime.fromisoformat(row['Complete Date']) if row['Complete Date'] else None,
-                author=self.request.user
-            )
+            if row['Title']:
+                self.model.objects.create(
+                    title=row['Title'],
+                    description=row['Description'] if row['Description']  else '',
+                    date=row['Create Date'] if row['Create Date'] else datetime.now(),
+                    done_date = row['Complete Date'] if row['Complete Date'] else None,
+                    author=self.request.user
+                )
 
         return super().form_valid(form)
+
+
+class AllOutputCsvFileView(OutputCsvFileMixin, TaskListView):
+    pass
+
+
+class DoneOutputCsvFileView(OutputCsvFileMixin, DoneTaskView):
+    pass
+
+
+class ActiveOutputCsvFileView(OutputCsvFileMixin, ActiveTaskView):
+    pass
