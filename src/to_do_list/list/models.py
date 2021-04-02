@@ -1,10 +1,11 @@
 from datetime import datetime
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.conf import settings
 
 class User(AbstractUser):
-    pass
+    frends = models.ManyToManyField('self', blank=True, symmetrical=True)
 
 
 class Task(models.Model):

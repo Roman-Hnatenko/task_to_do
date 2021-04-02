@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_registration',
     'list',
     'bootstrapform',
+    'django_celery_results',
     # 'widget_tweaks',
 
 ]
@@ -112,6 +113,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
+
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login/'
 LOGOUT_REDIRECT_URL = '/'
@@ -137,3 +153,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+BROKER_URL = 'redis://redis:6379/0'

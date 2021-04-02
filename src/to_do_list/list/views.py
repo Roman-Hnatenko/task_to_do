@@ -9,6 +9,7 @@ from django.views.generic import ListView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Task
 from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm
+from .tasks import save_tasks_from_csv
 
 
 class UserTasksMixin:
@@ -120,6 +121,7 @@ class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
         self.model.objects.filter(pk=pk_value).update(done_date=datetime.now())
         return super().post(request, *args, **kwargs)
 
+
 class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
     template_name = 'list/file_form.html'
     form_class = UploadFileForm
@@ -128,15 +130,15 @@ class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
 
     def form_valid(self, form):
         reader = form.cleaned_data['file']
-        for row in reader:
-            if row['Title']:
-                self.model.objects.create(
-                    title=row['Title'],
-                    description=row['Description'] if row['Description']  else '',
-                    date=row['Create Date'] if row['Create Date'] else datetime.now(),
-                    done_date = row['Complete Date'] if row['Complete Date'] else None,
-                    author=self.request.user
-                )
+
+        tasks_list = [(
+            row['Title'],
+            row['Description'] if row['Description']  else '',
+            row['Create Date'] if row['Create Date'] else datetime.now(),
+            row['Complete Date'] if row['Complete Date'] else None,
+        ) for row in reader if row['Title']]
+
+        save_tasks_from_csv.delay(tasks_list, self.request.user.id)
 
         return super().form_valid(form)
 
