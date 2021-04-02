@@ -9,6 +9,7 @@ psycopg2-binary = "*"
 python-decouple = "*"
 django-registration = "*"
 django-bootstrap-form = "*"
+django-filter = "*"
 
 [dev-packages]
 autopep8 = "*"

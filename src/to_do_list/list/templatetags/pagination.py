@@ -39,5 +39,5 @@ def paginate(context):
             paginate_html += generate_link(total_page, total_page, query)
         paginate_html += generate_link(page_obj.next_page_number(), '»', query)
 
-    html = f'<div class="container pagination"><div class="row text-center">{paginate_html}</div></div>'
+    html = f'<div class="pagination justify-content-center mb-3">{paginate_html}</div>'
     return mark_safe(html)

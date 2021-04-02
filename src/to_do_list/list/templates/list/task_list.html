@@ -1,30 +1,88 @@
 {% extends 'base.html' %}
 {% load pagination %}
+
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block buttons %}
+  <div class="conteiner">
+    <div class="row">
+
+      <div class="col-2">
+        <div style="display: inline">
+          <a type="button" href="{% url 'task_add' %}" class="btn btn-success">Add Task</a>
+        </div>
+      </div>
+
+      <div class="col-10">
+        <form>
+          {{ date_form }}
+          <button class="btn btn-success" type="submit">Show</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+  </div>
+{% endblock %}
+
 {% block sidebar %}
-  <a type="button" href="{% url 'task-add' %}" class="btn btn-success">Add Task</a>
 {% endblock %}
 
 {% block content %}
+  <ul class="nav nav-tabs mt-2">
+    <li class="nav-item">
+      <a class='nav-link {% if tab_name == "active" %}active{% endif %}' aria-current="page"
+         href="{% url 'task_active' %}">Active</a>
+    </li>
+    <li class="nav-item">
+      <a class='nav-link {% if tab_name == "done" %}active{% endif %}' href="{% url 'task_done' %}">Done</a>
+    </li>
+    <li class="nav-item">
+      <a class='nav-link {% if tab_name == "all" %}active{% endif %}' href="{% url 'task_view' %}">All</a>
+    </li>
+  </ul>
+
+
+  {% if not task_list %}
+    <div class="text-center mt-3"><h3>Nothing found</h3></div>{% endif %}
   {% for task in task_list %}
-    <ul class="list">
-      <li>
-        <div class="">
-          <a type="button" href="{% url 'task-delete' task.pk %}" class="close" aria-label="Close">
+    <ul class="list pl-0">
+      <li style="border-color: #dddddd;">
+        <div>
+          <a type="button" href="{% url 'task_delete' task.pk %}" class="close" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </a>
-          <h3>{{ task }}</h3>
-          <h4>{{ task.description }}</h4>
+          <h4>{{ task }}</h4>
+          <h5>{{ task.description }}</h5>
           <div class="row">
-            <div class="col-md-11"><span>{{ task.date }}</span></div>
-            <div class="col-md-1">
-              <a type="button" href="{% url 'task-update' task.pk %}" class="btn btn-success">Edit</a>
+            <div class="col-md-11"><span>{{ task.date|timesince }} ago</span></div>
+            <div class="col-mr-1">
+              <a type="button" href="{% url 'task_update' task.pk %}" class="btn btn-success">Edit</a>
             </div>
+            <div class="col-md-11">
+
+            {% if  not task.is_done %}
+                <form method="post" action='{% url "task_done_button" %}'>
+                {% csrf_token %}
+                <input type='hidden' name='pk' value="{{task.pk}}" />
+                <button type='submit' class='btn btn-primary mt-2' >Done</button>
+              </form>
+            {% else %}
+
+            <span> Performed {{ task.done_date|timesince }} ago </span>
+
+            {% endif%}
+            </div>
+
           </div>
         </div>
       </li>
     </ul>
   {% endfor %}
-
 
   {% paginate %}
 
