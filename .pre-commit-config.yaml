@@ -14,8 +14,8 @@ repos:
       - id: check-ast
       - id: debug-statements
       - id: double-quote-string-fixer
-      # - id: no-commit-to-branch
-      #   args: [--branch, dev, --branch, master]
+      - id: no-commit-to-branch
+        args: [--branch, main]
   - repo: https://github.com/pre-commit/mirrors-autopep8
     rev: v1.5.4
     hooks:
