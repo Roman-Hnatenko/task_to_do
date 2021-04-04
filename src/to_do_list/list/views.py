@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormVi
 from django.views.generic.list import BaseListView
 from django.views.generic import ListView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Task
+from .models import Task, User
 from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm
 from .tasks import save_tasks_from_csv
 
@@ -153,3 +153,9 @@ class DoneOutputCsvFileView(OutputCsvFileMixin, DoneTaskView):
 
 class ActiveOutputCsvFileView(OutputCsvFileMixin, ActiveTaskView):
     pass
+
+
+class FriendsListView(LoginRequiredMixin, ListView):
+    login_url = 'accounts/login/'
+    model = User
+    template_name = 'list/friends_list.html'

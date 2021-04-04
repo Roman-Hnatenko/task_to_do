@@ -15,11 +15,16 @@
 </head>
 <body>
 <div>
-  <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+  <nav class="navbar navbar-light colr">
     <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'task_view' %}">ToDoList</a>
       <form class="d-flex">
+        <ul class="nav navbar-nav pr-3">
+         <li><a href="{% url 'friends_list'%}">Friends</a></li>
+        </ul>
+
         <ul class="nav navbar-nav navbar-right">
+
           {% if user.is_authenticated %}
             <li><a href="{% url 'logout' %}">Log out</a></li>
           {% else %}
@@ -45,8 +50,5 @@
 
   </div>
 </div>
-
-
-
 </body>
 </html>
