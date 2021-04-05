@@ -5,7 +5,19 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 class User(AbstractUser):
-    frends = models.ManyToManyField('self', blank=True, symmetrical=True)
+    friends = models.ManyToManyField('self', blank=True, symmetrical=True)
+
+
+class InviteKey(models.Model):
+    invitor = models.ForeignKey(User, on_delete=models.CASCADE)
+    key = models.CharField(max_length=50, unique=True)
+    friend_id = models.IntegerField(null=True)
+
+    def is_active(self) -> bool:
+        return bool(self.friend_id)
+
+    def __str__(self):
+        return str(self.key)
 
 
 class Task(models.Model):

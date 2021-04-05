@@ -1,1 +1,63 @@
 {% extends 'base.html' %}
+
+{%if invite_link%}
+  {% block script%}
+    <script>
+
+    function CopyFunction() {
+    var copyText = document.getElementById("invite_link");
+    copyText.select();
+    document.execCommand("copy");
+    {% comment %} alert("Copied the text: " + copyText.value); {% endcomment %}
+  }
+    </script>
+  {% endblock%}
+{% endif%}
+
+
+
+{% block buttons%}
+  <div class="conteiner">
+  <div class="row">
+  <div class="col">
+      <h4>Friends:</h4>
+  </div>
+  <div class="col text-right d-inline">
+
+    {% if invite_link%}
+    <div class="input-group justify-content-end">
+      <div>
+        <input  class="form-control "  type="text" value="{{invite_link}}" id="invite_link">
+      </div>
+      <button class="btn btn-info" onclick="CopyFunction()">Copy link</button>
+    </div>
+    {% else%}
+
+    <form method="post" action="{% url 'creation_key'%}">
+    {% csrf_token %}
+      <button class="btn btn-info "  type="submit" >Invite friend</button>
+    <form>
+    {% endif%}
+
+  </div>
+    </div>
+  </div>
+
+{% endblock%}
+
+
+{%  block  content %}
+
+ <ul class="list pl-0">
+      <li>
+        <div>
+          <h5>Name</h5>
+          <div class="row">
+
+          </div>
+        </div>
+      </li>
+    </ul>
+
+
+{% endblock %}

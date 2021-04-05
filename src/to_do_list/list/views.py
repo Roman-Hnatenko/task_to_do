@@ -1,13 +1,15 @@
 import csv
+import secrets
 from datetime import datetime
+from re import template
 from typing import Any, Dict
-from django.http import HttpResponse
-from django.urls import reverse_lazy
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
-from django.views.generic.list import BaseListView
-from django.views.generic import ListView, RedirectView
+from django.views.generic import ListView, RedirectView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Task, User
+from .models import Task, User, InviteKey
 from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm
 from .tasks import save_tasks_from_csv
 
@@ -159,3 +161,35 @@ class FriendsListView(LoginRequiredMixin, ListView):
     login_url = 'accounts/login/'
     model = User
     template_name = 'list/friends_list.html'
+
+
+class CreationLinkView(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy('friends_list')
+    http_method_names = ['post']
+    model = InviteKey
+
+    def generate_key(self, user):
+        key = secrets.token_urlsafe(20)
+        # self.model.objects.create(invitor=user, key=key)
+        return key
+
+
+    def post(self, request, *args, **kwargs):
+        self.invite_link = request.build_absolute_uri(
+            reverse('confirm_invitation', kwargs={'key': self.generate_key(request.user)})
+        )
+        return super().post(request, *args, **kwargs)
+
+
+class ConfirmInvitationView(LoginRequiredMixin, TemplateView):
+    template_name = 'list/confirm_invitation.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        key = InviteKey.objects.filter(key=self.kwargs.get('key')).first()
+
+        if key and key.is_active():
+            pass
+        else:
+            context['error_message'] = 'Link is incorrect'
+        return context

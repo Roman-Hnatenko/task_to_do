@@ -22,5 +22,7 @@ urlpatterns = [
     path('task/<int:pk>/update/', views.TaskUpdateView.as_view(), name='task_update'),
     path('task/<int:pk>/delete/', views.TaskDeleteView.as_view(), name='task_delete'),
     path('friends/', views.FriendsListView.as_view(), name='friends_list'),
+    path('friends/create_key/', views.CreationLinkView.as_view(), name='creation_key'),
+    path('confirm_invitation/<slug:key>/', views.ConfirmInvitationView.as_view(), name='confirm_invitation'),
 
 ]
