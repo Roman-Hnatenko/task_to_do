@@ -10,14 +10,11 @@ class User(AbstractUser):
 
 class InviteKey(models.Model):
     invitor = models.ForeignKey(User, on_delete=models.CASCADE)
-    key = models.CharField(max_length=50, unique=True)
-    friend_id = models.IntegerField(null=True)
+    key = models.SlugField(max_length=50, unique=True)
+    friend = models.OneToOneField(User, on_delete=models.CASCADE, related_name='friend', null=True)
 
     def is_active(self) -> bool:
-        return bool(self.friend_id)
-
-    def __str__(self):
-        return str(self.key)
+        return not bool(self.friend)
 
 
 class Task(models.Model):

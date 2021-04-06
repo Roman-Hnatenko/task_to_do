@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block script%}
+ <script>
+
+    function CopyFunction() {
+    var copyText = document.getElementById("invite_link");
+    copyText.select();
+    document.execCommand("copy");
+    {% comment %} alert("Copied the text: " + copyText.value); {% endcomment %}
+  }
+    </script>
+{% endblock%}
+
+
+{% block content%}
+<h5> Link for one friend:</h5>
+    <div class="row">
+    <div class='col-8'>
+      <input  class="form-control"  type="text" value="{{invite_link}}" id="invite_link" readonly>
+    </div>
+    <div class='col-4'>
+      <button class="btn btn-info" onclick="CopyFunction()">Copy link</button>
+    </div>
+    </div>
+{% endblock%}

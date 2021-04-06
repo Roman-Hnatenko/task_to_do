@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block content%}
+{% if key%}
+<ul class="list pl-0">
+      <li>
+        <div>
+          <h5>User {{key.invitor}} wants to be your friend</h5>
+          <div class="row">
+          </div>
+        </div>
+        <form method="post" action="{% url 'accept_invite'%}">
+        {% csrf_token%}
+        {{form}}
+        <button type="submit" class="btn btn-success">Accept invitation</button>
+        </form>
+      </li>
+</ul>
+{% endif%}
+{% endblock%}

@@ -38,3 +38,7 @@ class DoneActiveDateForm(ActiveDateForm):
 
 class UploadFileForm(forms.Form):
     file = TaskCsvFileFied()
+
+
+class KeyForm(forms.Form):
+    key = forms.CharField(widget=forms.HiddenInput)
