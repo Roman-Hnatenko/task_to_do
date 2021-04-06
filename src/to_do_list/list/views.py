@@ -24,7 +24,8 @@ class TabMixin:
         return super().get_context_data(
             tab_name=self.tab_name,
             import_link=self.import_link,
-            *args, **kwargs)
+            *args, **kwargs
+        )
 
 
 class OutputCsvFileMixin:
@@ -159,12 +160,10 @@ class ActiveOutputCsvFileView(OutputCsvFileMixin, ActiveTaskView):
 
 class FriendsListView(LoginRequiredMixin, ListView):
     login_url = 'accounts/login/'
-    model = User
     template_name = 'list/friends_list.html'
 
     def get_queryset(self):
-        queryset = self.request.user.friends.all()
-        return queryset
+        return self.request.user.friends.all()
 
 
 class KeyCreationView(LoginRequiredMixin, RedirectView):
@@ -175,14 +174,13 @@ class KeyCreationView(LoginRequiredMixin, RedirectView):
 
     def post(self, request, *args, **kwargs):
         key = secrets.token_urlsafe(20)
-        self.model.objects.create(invitor=request.user, key=key)
+        self.model.objects.create(invitor=request.user)
 
         self.url = reverse(self.class_success_name, kwargs={'key': key})
         return super().post(request, *args, **kwargs)
 
 
 class LinkShowingView(LoginRequiredMixin, TemplateView):
-    login_url = 'accounts/login/'
     template_name = 'list/link_showing.html'
 
     def get_context_data(self, **kwargs):
@@ -196,7 +194,6 @@ class LinkShowingView(LoginRequiredMixin, TemplateView):
 
 
 class InvitorInfoView(LoginRequiredMixin, DetailView):
-    login_url = 'accounts/login/'
     template_name = 'list/invitor_info.html'
     model = InviteKey
     slug_url_kwarg = 'key'

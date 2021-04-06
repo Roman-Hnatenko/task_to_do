@@ -1,8 +1,6 @@
 from datetime import datetime
-from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings
 
 class User(AbstractUser):
     friends = models.ManyToManyField('self', blank=True, symmetrical=True)
@@ -13,6 +11,7 @@ class InviteKey(models.Model):
     key = models.SlugField(max_length=50, unique=True)
     friend = models.OneToOneField(User, on_delete=models.CASCADE, related_name='friend', null=True)
 
+    @property
     def is_active(self) -> bool:
         return not bool(self.friend)
 
