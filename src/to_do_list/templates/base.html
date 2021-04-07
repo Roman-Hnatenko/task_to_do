@@ -14,23 +14,22 @@
   {% block script %} {% endblock %}
 </head>
 <body>
+
 <div>
-  <nav class="navbar navbar-light colr">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'task_view' %}">ToDoList</a>
+  <nav class="navbar nav-color text-white navbar-light nav-color ">
+    <div class="container-fluid ">
+      <a class="navbar-brand text-white" href="{% url 'task_view' %}">ToDoList</a>
       {{user}}
       <form class="d-flex">
         <ul class="nav navbar-nav pr-3">
          <li><a href="{% url 'friends_list'%}">My Friends</a></li>
-
         </ul>
-
         <ul class="nav navbar-nav navbar-right">
 
           {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">Log out</a></li>
+            <li><a  href="{% url 'logout' %}">Log out</a></li>
           {% else %}
-            <li><a href="{% url 'login' %}">Log In</a></li>
+            <li><a  href="{% url 'login' %}">Log In</a></li>
           {% endif %}
         </ul>
       </form>
@@ -38,6 +37,13 @@
   </nav>
 </div>
 
+{% if messages %}
+<div class="alert message-color mb-0 text-white  text-center"  role="alert">
+{% for message in messages %}
+  <p class="mb-0">{{ message }}</p>
+{% endfor %}
+</div>
+{% endif %}
 
 <div class="container mt-2 ">
   <div class="row">
@@ -45,16 +51,7 @@
     <div class="col">
       {% block buttons %} {% endblock %}
 
-    {% if messages %}
-        {% for message in messages %}
-        <div class="text-center">
-        <h4>{{ message }}</h4>
-        </div>
-        {% endfor %}
-    {% endif %}
-
-      {% block content %}
-      {% endblock content %}
+      {% block content %} {% endblock content %}
     </div>
 
 

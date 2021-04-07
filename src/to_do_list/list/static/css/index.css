@@ -66,6 +66,14 @@
     display: inline;
 }
 
-.colr {
-    background-color: #e3f2fd;
+.nav-color {
+    background-color: #007a14
+}
+
+.message-color {
+    background-color: #5caef7;
+}
+
+.container-fluid a {
+    color: white;
 }

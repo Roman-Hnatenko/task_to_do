@@ -1,18 +1,21 @@
 import csv
-from django.contrib import messages
-import secrets
 from datetime import datetime
+from django.db import transaction
+from django.contrib import messages
 from django.http import Http404
 from typing import Any, Dict
 from django.http import HttpResponse
+from django.db.utils import IntegrityError
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
-from django.views.generic import ListView, RedirectView, TemplateView, DetailView
+from django.views.generic import ListView, RedirectView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Task, User, InviteKey
+from .models import Task, InviteKey
 from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm, KeyForm
 from .tasks import save_tasks_from_csv
 
+class LoginRequiredUrlMixin(LoginRequiredMixin):
+        login_url = 'accounts/login/'
 
 class UserTasksMixin:
     def get_queryset(self):
@@ -47,8 +50,7 @@ class OutputCsvFileMixin:
         return response
 
 
-class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
-    login_url = 'accounts/login/'
+class TaskListView(LoginRequiredUrlMixin, UserTasksMixin, TabMixin, ListView):
     model = Task
     ordering = '-pk'
     template_name = 'list/task_list.html'
@@ -76,7 +78,7 @@ class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
         return super().get(request, *args, **kwargs)
 
 
-class TaskCreateView(LoginRequiredMixin, CreateView):
+class TaskCreateView(LoginRequiredUrlMixin, CreateView):
     model = Task
     fields = ['title', 'description']
     success_url = reverse_lazy('task_view')
@@ -86,13 +88,13 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
+class TaskUpdateView(LoginRequiredUrlMixin, UserTasksMixin, UpdateView):
     model = Task
     fields = ['title', 'description']
     success_url = reverse_lazy('task_view')
 
 
-class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
+class TaskDeleteView(LoginRequiredUrlMixin, UserTasksMixin, DeleteView):
     model = Task
     success_url = reverse_lazy('task_view')
 
@@ -114,7 +116,7 @@ class DoneTaskView(TaskListView):
     )
 
 
-class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
+class DoneButtonTaskView(LoginRequiredUrlMixin, UserTasksMixin, RedirectView):
     url = reverse_lazy('task_view')
     http_method_names = ['post']
     model = Task
@@ -125,7 +127,7 @@ class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
         return super().post(request, *args, **kwargs)
 
 
-class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
+class UploadCsvFileView(LoginRequiredUrlMixin, UserTasksMixin, FormView):
     template_name = 'list/file_form.html'
     form_class = UploadFileForm
     success_url = reverse_lazy('task_view')
@@ -142,7 +144,6 @@ class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
         ) for row in reader if row['Title']]
 
         save_tasks_from_csv.delay(tasks_list, self.request.user.id)
-
         return super().form_valid(form)
 
 
@@ -158,42 +159,42 @@ class ActiveOutputCsvFileView(OutputCsvFileMixin, ActiveTaskView):
     pass
 
 
-class FriendsListView(LoginRequiredMixin, ListView):
-    login_url = 'accounts/login/'
+class FriendsListView(LoginRequiredUrlMixin, ListView):
     template_name = 'list/friends_list.html'
 
     def get_queryset(self):
-        return self.request.user.friends.all()
+        self.queryset = self.request.user.friends.all()
+        return super().get_queryset()
 
 
-class KeyCreationView(LoginRequiredMixin, RedirectView):
-    login_url = 'accounts/login/'
-    class_success_name = 'link_showing'
+class KeyCreationView(LoginRequiredUrlMixin, RedirectView):
+    class_success_name = 'link_info'
     http_method_names = ['post']
     model = InviteKey
 
     def post(self, request, *args, **kwargs):
-        key = secrets.token_urlsafe(20)
-        self.model.objects.create(invitor=request.user)
-
-        self.url = reverse(self.class_success_name, kwargs={'key': key})
+        key_obj = self.model.objects.create(invitor=request.user)
+        self.url = reverse(self.class_success_name, kwargs={'key': key_obj.key})
         return super().post(request, *args, **kwargs)
 
 
-class LinkShowingView(LoginRequiredMixin, TemplateView):
-    template_name = 'list/link_showing.html'
+class LinkView(LoginRequiredUrlMixin, DetailView):
+    template_name = 'list/link_info.html'
+    model = InviteKey
+    slug_url_kwarg = 'key'
+    slug_field = 'key'
+    query_pk_and_slug = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        key = self.kwargs.get('key')
         invite_link = self.request.build_absolute_uri(
-            reverse('invitor_info', kwargs={'key': key})
+            reverse('invitor_info', kwargs={'key': context['object'].key})
         )
         context['invite_link'] = invite_link
         return context
 
 
-class InvitorInfoView(LoginRequiredMixin, DetailView):
+class InvitorInfoView(LoginRequiredUrlMixin, DetailView):
     template_name = 'list/invitor_info.html'
     model = InviteKey
     slug_url_kwarg = 'key'
@@ -207,19 +208,27 @@ class InvitorInfoView(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         key_obj = super().get_object(queryset=queryset)
-        if key_obj.is_active() and not self.request.user == key_obj.invitor:
+        if key_obj.is_active:
             return key_obj
         raise Http404()
 
 
-class InviteAcceptingView(LoginRequiredMixin, FormView):
+class InviteAcceptingView(LoginRequiredUrlMixin, FormView):
     success_url = reverse_lazy('friends_list')
     form_class = KeyForm
 
     def form_valid(self, form):
+        try:
+            with transaction.atomic():
+                key_obj = InviteKey.objects.exclude(
+                    invitor=self.request.user
+                ).filter(
+                    key=form.cleaned_data['key'], friend__isnull=True
+                ).first()
+                key_obj.friend = self.request.user
+                key_obj.save(update_fields=['friend'])
+                self.request.user.friends.add(key_obj.invitor)
 
-        key_obj = InviteKey.objects.get(key=form.cleaned_data['key'])
-        key_obj.friend = self.request.user
-        key_obj.save()
-        self.request.user.friends.add(key_obj.invitor)
+        except IntegrityError:
+            messages.info(self.request, 'You are already friends')
         return super().form_valid(form)

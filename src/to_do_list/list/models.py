@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -8,7 +9,7 @@ class User(AbstractUser):
 
 class InviteKey(models.Model):
     invitor = models.ForeignKey(User, on_delete=models.CASCADE)
-    key = models.SlugField(max_length=50, unique=True)
+    key = models.SlugField(max_length=50, default=uuid.uuid1)
     friend = models.OneToOneField(User, on_delete=models.CASCADE, related_name='friend', null=True)
 
     @property
