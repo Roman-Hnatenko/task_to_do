@@ -14,8 +14,6 @@ from .models import Task, InviteKey
 from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm, KeyForm
 from .tasks import save_tasks_from_csv
 
-class LoginRequiredUrlMixin(LoginRequiredMixin):
-        login_url = 'accounts/login/'
 
 class UserTasksMixin:
     def get_queryset(self):
@@ -50,7 +48,7 @@ class OutputCsvFileMixin:
         return response
 
 
-class TaskListView(LoginRequiredUrlMixin, UserTasksMixin, TabMixin, ListView):
+class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
     model = Task
     ordering = '-pk'
     template_name = 'list/task_list.html'
@@ -78,7 +76,7 @@ class TaskListView(LoginRequiredUrlMixin, UserTasksMixin, TabMixin, ListView):
         return super().get(request, *args, **kwargs)
 
 
-class TaskCreateView(LoginRequiredUrlMixin, CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['title', 'description']
     success_url = reverse_lazy('task_view')
@@ -88,13 +86,13 @@ class TaskCreateView(LoginRequiredUrlMixin, CreateView):
         return super().form_valid(form)
 
 
-class TaskUpdateView(LoginRequiredUrlMixin, UserTasksMixin, UpdateView):
+class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
     model = Task
     fields = ['title', 'description']
     success_url = reverse_lazy('task_view')
 
 
-class TaskDeleteView(LoginRequiredUrlMixin, UserTasksMixin, DeleteView):
+class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
     model = Task
     success_url = reverse_lazy('task_view')
 
@@ -116,7 +114,7 @@ class DoneTaskView(TaskListView):
     )
 
 
-class DoneButtonTaskView(LoginRequiredUrlMixin, UserTasksMixin, RedirectView):
+class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
     url = reverse_lazy('task_view')
     http_method_names = ['post']
     model = Task
@@ -127,7 +125,7 @@ class DoneButtonTaskView(LoginRequiredUrlMixin, UserTasksMixin, RedirectView):
         return super().post(request, *args, **kwargs)
 
 
-class UploadCsvFileView(LoginRequiredUrlMixin, UserTasksMixin, FormView):
+class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
     template_name = 'list/file_form.html'
     form_class = UploadFileForm
     success_url = reverse_lazy('task_view')
@@ -159,7 +157,7 @@ class ActiveOutputCsvFileView(OutputCsvFileMixin, ActiveTaskView):
     pass
 
 
-class FriendsListView(LoginRequiredUrlMixin, ListView):
+class FriendsListView(LoginRequiredMixin, ListView):
     template_name = 'list/friends_list.html'
 
     def get_queryset(self):
@@ -167,7 +165,7 @@ class FriendsListView(LoginRequiredUrlMixin, ListView):
         return super().get_queryset()
 
 
-class KeyCreationView(LoginRequiredUrlMixin, RedirectView):
+class KeyCreationView(LoginRequiredMixin, RedirectView):
     class_success_name = 'link_info'
     http_method_names = ['post']
     model = InviteKey
@@ -178,7 +176,7 @@ class KeyCreationView(LoginRequiredUrlMixin, RedirectView):
         return super().post(request, *args, **kwargs)
 
 
-class LinkView(LoginRequiredUrlMixin, DetailView):
+class LinkView(LoginRequiredMixin, DetailView):
     template_name = 'list/link_info.html'
     model = InviteKey
     slug_url_kwarg = 'key'
@@ -194,7 +192,7 @@ class LinkView(LoginRequiredUrlMixin, DetailView):
         return context
 
 
-class InvitorInfoView(LoginRequiredUrlMixin, DetailView):
+class InvitorInfoView(LoginRequiredMixin, DetailView):
     template_name = 'list/invitor_info.html'
     model = InviteKey
     slug_url_kwarg = 'key'
@@ -213,7 +211,7 @@ class InvitorInfoView(LoginRequiredUrlMixin, DetailView):
         raise Http404()
 
 
-class InviteAcceptingView(LoginRequiredUrlMixin, FormView):
+class InviteAcceptingView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('friends_list')
     form_class = KeyForm
 
