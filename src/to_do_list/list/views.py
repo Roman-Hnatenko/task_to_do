@@ -15,7 +15,7 @@ from .forms import ActiveDateForm, DoneActiveDateForm, UploadFileForm, KeyForm
 from .tasks import save_tasks_from_csv
 
 
-class UserTasksMixin:
+class UserTasksRequireMixin(LoginRequiredMixin):
     def get_queryset(self):
         return super().get_queryset().filter(author=self.request.user)
 
@@ -48,17 +48,16 @@ class OutputCsvFileMixin:
         return response
 
 
-class TaskListView(LoginRequiredMixin, UserTasksMixin, TabMixin, ListView):
+class TaskListView(UserTasksRequireMixin, TabMixin, ListView):
     model = Task
     ordering = '-pk'
     template_name = 'list/task_list.html'
     paginate_by = 5
     tab_name = 'all'
     import_link = 'output_file'
-    filter_params: Dict[str, Any] = dict()
+    filter_params: Dict[str, Any] = {}
     class_form = ActiveDateForm
     date_form = None
-
 
     def get_context_data(self, *args, **kwargs):
         return super().get_context_data(date_form=self.date_form, file_form=UploadFileForm(), *args, **kwargs)
@@ -86,13 +85,13 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TaskUpdateView(LoginRequiredMixin, UserTasksMixin, UpdateView):
+class TaskUpdateView(UserTasksRequireMixin, UpdateView):
     model = Task
     fields = ['title', 'description']
     success_url = reverse_lazy('task_view')
 
 
-class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
+class TaskDeleteView(UserTasksRequireMixin, DeleteView):
     model = Task
     success_url = reverse_lazy('task_view')
 
@@ -100,21 +99,21 @@ class TaskDeleteView(LoginRequiredMixin, UserTasksMixin, DeleteView):
 class ActiveTaskView(TaskListView):
     import_link = 'output_file_active'
     tab_name = 'active'
-    filter_params = dict(
-        done_date__isnull=True
-    )
+    filter_params = {
+        'done_date__isnull': True
+    }
 
 
 class DoneTaskView(TaskListView):
     import_link = 'output_file_done'
     class_form = DoneActiveDateForm
     tab_name = 'done'
-    filter_params = dict(
-        done_date__isnull=False
-    )
+    filter_params = {
+        'done_date__isnull': False
+    }
 
 
-class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
+class DoneButtonTaskView(UserTasksRequireMixin, RedirectView):
     url = reverse_lazy('task_view')
     http_method_names = ['post']
     model = Task
@@ -125,7 +124,7 @@ class DoneButtonTaskView(LoginRequiredMixin, UserTasksMixin, RedirectView):
         return super().post(request, *args, **kwargs)
 
 
-class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
+class UploadCsvFileView(UserTasksRequireMixin, FormView):
     template_name = 'list/file_form.html'
     form_class = UploadFileForm
     success_url = reverse_lazy('task_view')
@@ -136,7 +135,7 @@ class UploadCsvFileView(LoginRequiredMixin, UserTasksMixin, FormView):
 
         tasks_list = [(
             row['Title'],
-            row['Description'] if row['Description']  else '',
+            row['Description'] if row['Description'] else '',
             row['Create Date'] if row['Create Date'] else datetime.now(),
             row['Complete Date'] if row['Complete Date'] else None,
         ) for row in reader if row['Title']]
