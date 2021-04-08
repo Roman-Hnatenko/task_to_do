@@ -23,7 +23,6 @@
 		"python.languageServer": "Pylance",
 		"python.pythonPath": "/usr/local/bin/python",
 		"python.analysis.completeFunctionParens": true,
-		"python.analysis.typeCheckingMode": "basic",
 		"python.analysis.indexing": true,
 		"files.autoSave": "afterDelay",
 		"python.linting.pylintEnabled": true,
