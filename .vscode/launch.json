@@ -4,6 +4,17 @@
     // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+      {
+          "name": "Django Tests",
+          "type": "python",
+          "request": "launch",
+          "cwd": "${workspaceFolder}/src/to_do_list/",
+          "program": "manage.py",
+          "args": [
+            "test"
+          ],
+          "django": true
+        },
 
         {
             "name": "Python: Django",

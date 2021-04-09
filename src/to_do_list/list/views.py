@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from django.utils import timezone
 from django.db import transaction
 from django.contrib import messages
 from django.http import Http404
@@ -120,7 +120,7 @@ class DoneButtonTaskView(UserTasksRequireMixin, RedirectView):
 
     def post(self, request, *args, **kwargs):
         pk_value = request.POST.get('pk')
-        self.model.objects.filter(pk=pk_value).update(done_date=datetime.now())
+        self.model.objects.filter(pk=pk_value).update(done_date=timezone.now())
         return super().post(request, *args, **kwargs)
 
 
@@ -136,10 +136,10 @@ class UploadCsvFileView(UserTasksRequireMixin, FormView):
         tasks_list = [(
             row['Title'],
             row['Description'] if row['Description'] else '',
-            row['Create Date'] if row['Create Date'] else datetime.now(),
+            row['Create Date'] if row['Create Date'] else timezone.now(),
             row['Complete Date'] if row['Complete Date'] else None,
         ) for row in reader if row['Title']]
-
+        print(tasks_list)
         save_tasks_from_csv.delay(tasks_list, self.request.user.id)
         return super().form_valid(form)
 
@@ -185,10 +185,16 @@ class LinkView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         invite_link = self.request.build_absolute_uri(
-            reverse('invitor_info', kwargs={'key': context['object'].key})
+            reverse('invitor_info', kwargs={'key': context['object'].key},)
         )
         context['invite_link'] = invite_link
         return context
+
+    def get_object(self, queryset=None):
+        key_obj = super().get_object(queryset=queryset)
+        if not key_obj.is_active or not key_obj.is_invitor(self.request.user):
+            raise Http404
+        return key_obj
 
 
 class InvitorInfoView(LoginRequiredMixin, DetailView):
@@ -213,6 +219,7 @@ class InvitorInfoView(LoginRequiredMixin, DetailView):
 class InviteAcceptingView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('friends_list')
     form_class = KeyForm
+    http_method_names = ['post']
 
     def form_valid(self, form):
         try:
@@ -229,3 +236,6 @@ class InviteAcceptingView(LoginRequiredMixin, FormView):
         except IntegrityError:
             messages.info(self.request, 'You are already friends')
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        raise Http404()
